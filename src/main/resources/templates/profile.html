@@ -33,11 +33,11 @@
 <div class="col-lg-1 col-offset-6 centered">
     <div class="card" style="width: 18rem;">
         <div class="card-body">
-            <h5 class="card-title" th:text="'Name = ' + ${name} + ${lastname} + '!'" />
+            <h5 class="card-title" th:text="'Name = ' + ${name} + ' ' + ${lastname}" />
         </div>
         <ul class="list-group list-group-flush">
-            <li class="list-group-item" th:text="'Role = ' + ${role} + '!'" />
-            <li class="list-group-item" th:text="'CreatedOn = ' + ${date} + '!'" />
+            <li class="list-group-item" th:text="'Role = ' + ${role}" />
+            <li class="list-group-item" th:text="'CreatedOn = ' + ${date}" />
             <li class="list-group-item">Other Info</li>
         </ul>
     </div>
