@@ -13,18 +13,23 @@ import java.util.List;
 @Controller
 public class UserController {
 
-    private List<User> users = new ArrayList<>();
+    private final List<User> users = new ArrayList<>();
 
     public UserController() {
-        users.add(new User(1L, "Chad", "Larsen", LocalDate.now(), "user"));
-        users.add(new User(2L, "Ruby", "Waters", LocalDate.now(), "user"));
-        users.add(new User(3L, "Louis", "Metcalfe", LocalDate.now(), "user"));
-        users.add(new User(4L, "Keaton", "Fellows", LocalDate.now(), "user"));
-        users.add(new User(5L, "Keyan", "Lord", LocalDate.now(), "user"));
+        addUser("Onur", "Togan", "onur", "pass", "admin");
+        addUser("Chad", "Larsen", "chad", "1234", "user");
+        addUser("Ruby", "Waters", "ruby", "abc", "user");
+        addUser("Louis", "Metcalfe", "louis", "password", "user");
+        addUser("Keaton", "Fellows", "keaton", "mycat", "user");
+        addUser("Keyan", "Lord", "key", "mama", "user");
     }
 
-    @GetMapping("/profile")
-    public String profile(@RequestParam(name = "id") int id, Model model) {
+    private void addUser(String firstName, String lastName, String username, String password, String role) {
+        users.add(new User(users.size(), firstName, lastName, username, password, role, LocalDate.now()));
+    }
+
+    @GetMapping("/user/profile")
+    public String profile(@RequestParam() int id, Model model) {
         User user = users.get(id);
         model.addAttribute("name", user.getFirstName());
         model.addAttribute("lastname", user.getLastName());
@@ -32,5 +37,6 @@ public class UserController {
         model.addAttribute("date", user.getDateCreated().toString());
         return "profile";
     }
+
 
 }
