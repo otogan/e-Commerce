@@ -1,6 +1,7 @@
 package com.ecommerce.web.model;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 public class User {
 
@@ -23,6 +24,10 @@ public class User {
         this.password = password;
         this.role = role;
         this.dateCreated = dateCreated;
+    }
+
+    public boolean validate(String username, String password) {
+        return Objects.equals(this.username, username) && Objects.equals(this.password, password);
     }
 
     public long getId() {
