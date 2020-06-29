@@ -34,7 +34,7 @@ public class UserController {
 
     @GetMapping("/user")
     public String profile(@RequestParam() long id, Model model) {
-        User user = repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        User user = repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found!"));
         updateProfileModel(user, model);
         return "profile";
     }
