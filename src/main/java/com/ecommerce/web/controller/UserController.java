@@ -1,92 +1,86 @@
 package com.ecommerce.web.controller;
 
-import com.ecommerce.web.model.User;
+import com.ecommerce.web.data.entity.User;
+import com.ecommerce.web.data.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.validation.Valid;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 @Controller
 public class UserController {
 
-    private final List<User> users = new ArrayList<>();
+    private final UserRepository repository;
 
-    public UserController() {
-        addUser("Onur", "Togan", "onur", "pass", "admin");
-        addUser("Chad", "Larsen", "chad", "1234", "user");
-        addUser("Ruby", "Waters", "ruby", "abc", "user");
-        addUser("Louis", "Metcalfe", "louis", "password", "user");
-        addUser("Keaton", "Fellows", "keaton", "mycat", "user");
-        addUser("Keyan", "Lord", "key", "mama", "user");
-    }
-
-    private User addUser(String firstName, String lastName, String username, String password, String role) {
-        int id = users.size();
-        User user = new User(id, firstName, lastName, username, password, role, LocalDate.now());
-        users.add(user);
-        return user;
+    @Autowired
+    public UserController(UserRepository repository) {
+        this.repository = repository;
     }
 
     private void updateProfileModel(User user, Model model) {
-        model.addAttribute("name", user.getFirstName());
-        model.addAttribute("lastname", user.getLastName());
+        model.addAttribute("firstName", user.getFirstName());
+        model.addAttribute("lastName", user.getLastName());
+        model.addAttribute("email", user.getEmail());
+        model.addAttribute("username", user.getUsername());
+        model.addAttribute("password", user.getPassword());
         model.addAttribute("role", user.getRole());
         model.addAttribute("date", user.getDateCreated().toString());
     }
 
-    private User findValidUser(User user) {
-        for (User next : users) {
-            if (next.validate(user.getUsername(), user.getPassword())) {
-                return next;
-            }
-        }
-        return null;
-    }
-
-    private boolean usernameExists(String username) {
-        for (User user : users) {
-            if (Objects.equals(user.getUsername(), username)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @GetMapping("/user/profile")
-    public String profile(@RequestParam() int id, Model model) {
-        updateProfileModel(users.get(id), model);
+    @GetMapping("/user")
+    public String profile(@RequestParam() long id, Model model) {
+        User user = repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        updateProfileModel(user, model);
         return "profile";
     }
 
-    @PostMapping("/user/register")
-    public String register(@RequestBody User user, Model model) {
-        if (usernameExists(user.getUsername())) {
-            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Username not accepted!");
+    @GetMapping("/login")
+    public String loginForm(Model model) {
+        model.addAttribute("user", new User());
+        return "login";
+    }
+
+    @PostMapping("/login")
+    public String login(@ModelAttribute User user, Model model) {
+        User validUser = repository.findByUsernameAndPassword(user.getUsername(), user.getPassword()).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")
+        );
+        updateProfileModel(validUser, model);
+        return "profile";
+    }
+
+    @GetMapping("/register")
+    public String registrationForm(Model model) {
+        model.addAttribute("user", new User());
+        return "register";
+    }
+
+    @PostMapping("/register")
+    public String register(@Valid @ModelAttribute User user, Model model) {
+        boolean userExists = repository.findByUsername(user.getUsername()).isPresent();
+        if (userExists) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Username exists!");
         }
-        User newUser = addUser(user.getFirstName(), user.getLastName(), user.getUsername(), user.getPassword(), "user");
+        if (user.getUsername() == null) {
+            user.setUsername(user.getEmail());
+        }
+        user.setDateCreated(LocalDate.now());
+        user.setRole("USER");
+        User newUser;
+        try {
+            newUser = repository.save(user);
+        } catch (Exception e) {
+            System.out.println("Could not create user!");
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "Couldn't save user.");
+        }
         updateProfileModel(newUser, model);
         return "profile";
     }
 
-    @PostMapping("/user/validate")
-    public String validate(@RequestBody User user, Model model) {
-        User validUser = findValidUser(user);
-        if (validUser == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
-        }
-        updateProfileModel(validUser, model);
-        return "profile";
-    }
 
 }

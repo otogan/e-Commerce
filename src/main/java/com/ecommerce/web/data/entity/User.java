@@ -1,33 +1,52 @@
-package com.ecommerce.web.model;
+package com.ecommerce.web.data.entity;
 
+import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
-import java.util.Objects;
 
+@Entity
+@Table(name = "USER")
 public class User {
 
+    @Id
+    @Column(name = "USER_ID")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+    @Column(name = "FIRST_NAME")
+    @NotBlank
     private String firstName;
+    @Column(name = "LAST_NAME")
+    @NotBlank
     private String lastName;
+    @Column(name = "EMAIL")
+    @NotNull
+    @Email
+    private String email;
+    @Column(name = "USERNAME")
     private String username;
+    @Column(name = "PASSWORD")
+    @NotEmpty
     private String password;
-    private LocalDate dateCreated;
+    @Column(name = "ROLE")
     private String role;
+    @Column(name = "DATE_CREATED")
+    private LocalDate dateCreated;
 
     public User() {
     }
 
-    public User(long id, String firstName, String lastName, String username, String password, String role, LocalDate dateCreated) {
+    public User(long id, String firstName, String lastName, String email, String username, String password, String role, LocalDate dateCreated) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.email = email;
         this.username = username;
         this.password = password;
         this.role = role;
         this.dateCreated = dateCreated;
-    }
-
-    public boolean validate(String username, String password) {
-        return Objects.equals(this.username, username) && Objects.equals(this.password, password);
     }
 
     public long getId() {
@@ -52,6 +71,14 @@ public class User {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getUsername() {
