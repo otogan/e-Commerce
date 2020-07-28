@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Controller
 public class UserController {
@@ -69,7 +69,7 @@ public class UserController {
         if (user.getUsername() == null) {
             user.setUsername(user.getEmail());
         }
-        user.setDateCreated(LocalDate.now());
+        user.setDateCreated(LocalDateTime.now());
         user.setRole("USER");
         User newUser;
         try {

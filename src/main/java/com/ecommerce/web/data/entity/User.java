@@ -1,11 +1,13 @@
 package com.ecommerce.web.data.entity;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "USER")
@@ -15,30 +17,40 @@ public class User {
     @Column(name = "USER_ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @Column(name = "FIRST_NAME")
     @NotBlank
+    @Column(name = "FIRST_NAME", nullable = false)
     private String firstName;
-    @Column(name = "LAST_NAME")
     @NotBlank
+    @Column(name = "LAST_NAME", nullable = false)
     private String lastName;
-    @Column(name = "EMAIL")
     @NotNull
     @Email
+    @Column(name = "EMAIL", unique = true)
     private String email;
-    @Column(name = "USERNAME")
+    @NotNull
+    @Column(name = "USERNAME", unique = true)
     private String username;
-    @Column(name = "PASSWORD")
     @NotEmpty
+    @Column(name = "PASSWORD", nullable = false)
     private String password;
-    @Column(name = "ROLE")
+    @Column(name = "PHONE")
+    private String phone;
+    @Column(name = "ADDRESS")
+    private String address;
+    @Column(name = "CITY")
+    private String city;
+    @Column(name = "STATE", columnDefinition = "char(2)")
+    private String state;
+    @Column(name = "ROLE", columnDefinition = "varchar(50) default 'USER'")
     private String role;
+    @CreationTimestamp
     @Column(name = "DATE_CREATED")
-    private LocalDate dateCreated;
+    private LocalDateTime dateCreated;
 
     public User() {
     }
 
-    public User(long id, String firstName, String lastName, String email, String username, String password, String role, LocalDate dateCreated) {
+    public User(long id, String firstName, String lastName, String email, String username, String password, String role, LocalDateTime dateCreated) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -97,11 +109,11 @@ public class User {
         this.password = password;
     }
 
-    public LocalDate getDateCreated() {
+    public LocalDateTime getDateCreated() {
         return dateCreated;
     }
 
-    public void setDateCreated(LocalDate dateCreated) {
+    public void setDateCreated(LocalDateTime dateCreated) {
         this.dateCreated = dateCreated;
     }
 
