@@ -28,7 +28,6 @@ public class UserController {
         model.addAttribute("email", user.getEmail());
         model.addAttribute("username", user.getUsername());
         model.addAttribute("password", user.getPassword());
-        model.addAttribute("role", user.getRole());
         model.addAttribute("date", user.getDateCreated().toString());
     }
 
@@ -70,7 +69,7 @@ public class UserController {
             user.setUsername(user.getEmail());
         }
         user.setDateCreated(LocalDateTime.now());
-        user.setRole("USER");
+//        user.setRole("USER");
         User newUser;
         try {
             newUser = repository.save(user);

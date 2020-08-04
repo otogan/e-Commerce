@@ -1,37 +1,37 @@
 package com.ecommerce.web.data.entity;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "PRODUCTS")
-public class Product {
+public class Product implements Serializable {
 
     @Id
     @Column(name = "PRODUCT_ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-    @Column(name = "NAME", nullable = false)
+    private long id;
+    @Column(name = "PRODUCT_NAME", nullable = false)
     private String name;
     @Column(name = "QUANTITY", nullable = false)
     private int quantity;
-    @Column(name = "PRICE", nullable = false, columnDefinition = "decimal(4,2)")
+    @Column(name = "UNIT_PRICE", nullable = false, columnDefinition = "decimal(4,2)")
     private double price;
 
     public Product() {
     }
 
-    public Product(int id, String name, int quantity, double price) {
-        this.id = id;
+    public Product(String name, int quantity, double price) {
         this.name = name;
         this.quantity = quantity;
         this.price = price;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -71,12 +71,12 @@ public class Product {
 
     @Override
     public int hashCode() {
-        return id;
+        return (int) (id ^ (id >>> 32));
     }
 
     @Override
     public String toString() {
-        return "Product{" +
+        return "{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", quantity=" + quantity +

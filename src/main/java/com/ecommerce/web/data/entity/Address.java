@@ -1,27 +1,63 @@
 package com.ecommerce.web.data.entity;
 
-public class Address {
-    private String street;
+import javax.persistence.*;
+import java.io.Serializable;
+
+@Entity
+@Table(name = "ADDRESSES")
+public class Address implements Serializable {
+    @Id
+    @Column(name = "ADDRESS_ID")
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private long id;
+
+    @ManyToOne
+    @JoinColumn(name = "CUSTOMER_ID", nullable = false)
+    private User customer;
+
+    @Column(name = "ADDRESS")
+    private String address;
+    @Column(name = "CITY")
     private String city;
+    @Column(name = "STATE", columnDefinition = "char(2)")
     private String state;
-    private String zip;
+    @Column(name = "ZIP_CODE")
+    private int zipCode;
 
     public Address() {
     }
 
-    public Address(String street, String city, String state, String zip) {
-        this.street = street;
+    public Address(long id, User customer, String address, String city, String state, int zipCode) {
+        this.id = id;
+        this.customer = customer;
+        this.address = address;
         this.city = city;
         this.state = state;
-        this.zip = zip;
+        this.zipCode = zipCode;
     }
 
-    public String getStreet() {
-        return street;
+    public long getId() {
+        return id;
     }
 
-    public void setStreet(String street) {
-        this.street = street;
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public User getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(User customer) {
+        this.customer = customer;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public String getCity() {
@@ -40,19 +76,12 @@ public class Address {
         this.state = state;
     }
 
-    public String getZip() {
-        return zip;
+    public int getZipCode() {
+        return zipCode;
     }
 
-    public void setZip(String zip) {
-        this.zip = zip;
-    }
-
-    @Override
-    public String toString() {
-        return street + ", " +
-                city + ", " +
-                state + " " + zip;
+    public void setZipCode(int zipCode) {
+        this.zipCode = zipCode;
     }
 
     @Override
@@ -62,18 +91,22 @@ public class Address {
 
         Address address = (Address) o;
 
-        if (street != null ? !street.equals(address.street) : address.street != null) return false;
-        if (city != null ? !city.equals(address.city) : address.city != null) return false;
-        if (state != null ? !state.equals(address.state) : address.state != null) return false;
-        return zip != null ? zip.equals(address.zip) : address.zip == null;
+        return id == address.id;
     }
 
     @Override
     public int hashCode() {
-        int result = street != null ? street.hashCode() : 0;
-        result = 31 * result + (city != null ? city.hashCode() : 0);
-        result = 31 * result + (state != null ? state.hashCode() : 0);
-        result = 31 * result + (zip != null ? zip.hashCode() : 0);
-        return result;
+        return (int) (id ^ (id >>> 32));
+    }
+
+    @Override
+    public String toString() {
+        return "Address{" +
+                "id=" + id +
+                ", address='" + address + '\'' +
+                ", city='" + city + '\'' +
+                ", state='" + state + '\'' +
+                ", zipCode=" + zipCode +
+                '}';
     }
 }

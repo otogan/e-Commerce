@@ -7,11 +7,14 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
-@Table(name = "USER")
-public class User {
+@Table(name = "USERS")
+public class User implements Serializable {
 
     @Id
     @Column(name = "USER_ID")
@@ -35,30 +38,29 @@ public class User {
     private String password;
     @Column(name = "PHONE")
     private String phone;
-    @Column(name = "ADDRESS")
-    private String address;
-    @Column(name = "CITY")
-    private String city;
-    @Column(name = "STATE", columnDefinition = "char(2)")
-    private String state;
-    @Column(name = "ROLE", columnDefinition = "varchar(50) default 'USER'")
-    private String role;
     @CreationTimestamp
     @Column(name = "DATE_CREATED")
     private LocalDateTime dateCreated;
 
+    @OneToMany(mappedBy = "customer")
+    private List<Address> addresses = new ArrayList<>();
+
+    @OneToMany(mappedBy = "customer", fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    private List<Order> orders = new ArrayList<>();
+
     public User() {
     }
 
-    public User(long id, String firstName, String lastName, String email, String username, String password, String role, LocalDateTime dateCreated) {
+    public User(long id, @NotBlank String firstName, @NotBlank String lastName, @NotNull @Email String email, @NotNull String username, @NotEmpty String password, String phone, LocalDateTime dateCreated, List<Order> orders) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.username = username;
         this.password = password;
-        this.role = role;
+        this.phone = phone;
         this.dateCreated = dateCreated;
+        this.orders = orders;
     }
 
     public long getId() {
@@ -117,12 +119,28 @@ public class User {
         this.dateCreated = dateCreated;
     }
 
-    public String getRole() {
-        return role;
+    public String getPhone() {
+        return phone;
     }
 
-    public void setRole(String role) {
-        this.role = role;
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public List<Address> getAddresses() {
+        return addresses;
+    }
+
+    public void setAddresses(List<Address> addresses) {
+        this.addresses = addresses;
+    }
+
+    public List<Order> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(List<Order> orders) {
+        this.orders = orders;
     }
 
     @Override
@@ -138,5 +156,19 @@ public class User {
     @Override
     public int hashCode() {
         return (int) (id ^ (id >>> 32));
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", phone='" + phone + '\'' +
+                ", dateCreated=" + dateCreated +
+                '}';
     }
 }
